@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Controller-level functions for delegating to or calling from views.
+ *
  * @author Steve Chaloner (steve@objectify.be)
  */
 public class TableController extends Controller
@@ -99,6 +101,13 @@ public class TableController extends Controller
                    getMapper(itemClass));
     }
 
+    /**
+     * Gets the mapper for the class.  If no mapper is defined, a {@link FallbackObjectValueMapper} is returned.
+     *
+     * @param clazz the class of the object to map
+     * @param <T> the type of the object to map
+     * @return an object value mapper
+     */
     private static <T> ObjectValueMapper<T> getMapper(Class<T> clazz)
     {
         ObjectValueMapper<T> mapper = VALUE_MAPPERS.get(clazz);
@@ -109,6 +118,12 @@ public class TableController extends Controller
         return mapper;
     }
 
+    /**
+     * Add a {@link ObjectValueMapper} that's globally accessible.
+     *
+     * @param clazz the class mapped by the mapper
+     * @param mapper the mapper
+     */
     public static void addObjectValueMapper(Class clazz,
                                             ObjectValueMapper mapper)
     {
