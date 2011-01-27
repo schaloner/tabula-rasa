@@ -5,10 +5,16 @@ import be.objectify.led.Property;
 import java.lang.reflect.Field;
 
 /**
+ * objectify-led based implementation of a {@link ObjectValueMapper}.  The inspected object must use
+ * {@link be.objectify.led.Property} annotations to get the benefit of automated mapping.
+ *
  * @author Steve Chaloner (steve@objectify.be).
  */
 public class FallbackObjectValueMapper<T> extends AbstractObjectValueMapper<T>
 {
+    /**
+     * {@inheritDoc}
+     */
     public Object getByName(T t,
                             String name)
     {
@@ -16,6 +22,13 @@ public class FallbackObjectValueMapper<T> extends AbstractObjectValueMapper<T>
         return value == null ? "" : value;
     }
 
+    /**
+     * Gets the value of the field marked as property <i>name</i>, or null if it can't be found.
+     *
+     * @param t the object containing the information
+     * @param name the identifier for that information
+     * @return the value of the property
+     */
     private Object getTargetObject(T t,
                                    String name)
     {
