@@ -1,0 +1,8 @@
+%{ targetName = _targetName == null ? 'targets'  : _targetName }%
+
+<script type="text/javascript" charset="utf-8">
+    $('#${_controlId}').change(function() {
+        var isChecked = $('#${_controlId}').attr('checked');
+        $("input[name = '${targetName}'][type = 'checkbox']").attr('checked', isChecked);
+    });
+</script>

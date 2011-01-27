@@ -1,0 +1,28 @@
+#{if _addScriptTag && _addScriptTag == true}
+<script type="text/javascript">
+    $(document).ready(function() {
+#{/if}
+   #{doBody /}
+   var _internal${_tableId}Params = (typeof ${_tableId}Parameters == 'undefined' ) ? {} : ${_tableId}Parameters;
+
+   if (typeof _internal${_tableId}Params.sAjaxSource != 'undefined')
+   {
+       _internal${_tableId}Params.fnServerData = function ( sSource, aoData, fnCallback ) {
+            aoData.push( { "name": "tableId",
+                           "value": "${_tableId}" } );
+            $.getJSON( sSource, aoData, function (json) {
+			    fnCallback(json)
+			});
+		};
+
+        if ((typeof ${_tableId}Extras != 'undefined') && (typeof ${_tableId}Extras.toolbar != 'undefined'))
+        {
+            $("div." + ${_tableId}Extras.toolbarTarget).html(${_tableId}Extras.toolbar);
+        }
+    }
+
+    var ${_tableId}DataTable = $('#${_tableId}').dataTable(_internal${_tableId}Params);
+#{if _addScriptTag && _addScriptTag == true}
+    });
+</script>
+#{/if}

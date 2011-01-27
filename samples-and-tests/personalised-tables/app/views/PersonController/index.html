@@ -1,0 +1,29 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+
+#{set 'moreScripts'}
+    #{tabularasa.init addScriptTag:true, tableId:tableModel.tableId /}
+#{/set}
+
+#{tabularasa.table tableModel:tableModel, cssClass:'display', selectAll:true}
+    #{list items:people, as:'person'}
+        <tr>
+            <td>
+                <input type="checkbox" name="targets" value="${person.id}"/>
+            </td>
+            #{list items:tableModel.tableColumns, as:'column'}
+                #{if column.visible}
+                    <td>${controllers.PersonController.getByColumnKey(person, column.columnKey)}</td>
+                #{/if}
+            #{/list}
+        </tr>
+    #{/list}
+#{/tabularasa.table}
+
+<form action="@{PersonController.index}">
+    <select name="userName">
+        <option value="steve">Steve</option>
+        <option value="greet">Greet</option>
+    </select>
+    <input type="submit"/>
+</form>
