@@ -1,8 +1,8 @@
 <table id="${_tableModel.tableId}" class="${_cssClass}">
     <thead>
         <tr>
-            #{if _selectAll && _selectAll == true}
-                <th><input type="checkbox" id="selectAll"/></th>
+            #{if _selectAllControlId}
+                <th><input type="checkbox" id="${_selectAllControlId}"/></th>
             #{/if}
             #{list _tableModel.tableColumns, as:'column'}
                 #{if column.visible}
@@ -17,7 +17,7 @@
     #{ifnot _excludeFooter && _excludeFooter == true}
         <tfoot>
             <tr>
-                #{if _selectAll && _selectAll == true}
+                #{if _selectAllControlId}
                     <th></th>
                 #{/if}
                 #{list _tableModel.tableColumns, as:'column'}
