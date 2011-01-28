@@ -83,6 +83,65 @@ private static final String[] MANDATORY_COLUMNS = {"name", "foo"};
 
 A table model initialised with these arrays would contain four columns - the union of ALL_COLUMNS and VISIBLE_COLUMNS would be visible, any column marked as mandatory would be flagged as both mandatory and visible - even if it didn't appear in VISIBLE_COLUMNS,  and the order would be "name", "location", "foo" and "bar".
 
+h2. Displaying the table
+
+h3. Rendering with data at request time
+
+The standard Play mechanism of passing objects to be rendered into the render() method is used here, with the table model also passed in.
+
+bc. List<Foo> foo = Foo.findAll();
+render(tableModel,
+       foo);
+
+In the view, you first need to initialize the table.
+
+bc. #{set 'moreScripts'}
+    #{tabularasa.init addScriptTag:true, tableId:tableModel.tableId, tableModel:tableModel /}
+#{/set}
+
+Note the addScriptTag parameter - this will render a javascript block with a jQuery *$(document).ready()* block around the script.  If you exclude this parameter, you will need to put the tag into a javascript block yourself.
+
+This will set up the DataTable parameters and convert the HTML table to a DataTable when the document is ready.
+
+To render the rows of the table, you need to use the tabularasa.table tag.  This tag will create the table, the table header, etc, so you only need to add tr elements.
+
+bc. #{tabularasa.table tableModel:tableModel, cssClass:'display'}
+    #{list items:foo, as:'fooInstance'}
+        <tr>
+            #{list items:tableModel.tableColumns, as:'column'}
+                #{if column.visible}
+                    <td>${controllers.FooController.getByColumnKey(fooInstance, column.columnKey)}</td>
+                #{/if}
+            #{/list}
+        </tr>
+    #{/list}
+#{/tabularasa.table}
+
+FooController.getByColumnKey is a static utility method that retrieves a value from the target object based on the column key.  See the section below on mapping values for more on this.
+
+h2. Mapping values based on the column key
+
+h3. The brute force approach
+
+You can use brute force to map values, for example
+
+bc. public static Object getByColumnKey(Foo foo, String columnKey)
+{
+    Object value = null;
+    if ("name".equals(columnKey))
+    {
+        value = foo.name;
+    }
+    else if ("location".equals(columnKey))
+    {
+        value = foo.location;
+    }
+    return value;
+}
+
+h3. ObjectValueMappers
+
+You can encapsulate the logic for mapping column keys to object values into ObjectValueMappers.  When rendering data via AJAX, a mapper can be passed to the renderJSON method or you can registered a mapper against a class globally within the TableController.  If a mapper for the class can't be found, or isn't passed in, a fallback mapper is used which uses "objectify-led":http://www.objectify.be/objectify-led properties to identify the mapping.
 
 h2. The name
 
