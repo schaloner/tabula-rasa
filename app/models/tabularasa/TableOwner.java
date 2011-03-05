@@ -10,24 +10,24 @@ import javax.persistence.Entity;
 @Entity
 public class TableOwner extends Model
 {
-    public String key;
+    public String ownerKey;
 
     private TableOwner(Builder builder)
     {
-        key = builder.key;
+        ownerKey = builder.ownerKey;
     }
 
     public static final class Builder
     {
-        private String key;
+        private String ownerKey;
 
         public Builder()
         {
         }
 
-        public Builder key(String key)
+        public Builder ownerKey(String ownerKey)
         {
-            this.key = key;
+            this.ownerKey = ownerKey;
             return this;
         }
 

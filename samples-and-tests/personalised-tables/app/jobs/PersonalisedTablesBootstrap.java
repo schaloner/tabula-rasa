@@ -51,12 +51,12 @@ public class PersonalisedTablesBootstrap extends Job
         {
             new ExampleUser.Builder()
                     .userName("steve")
-                    .tableOwner(new TableOwner.Builder().key("steve").build())
+                    .tableOwner(new TableOwner.Builder().ownerKey("steve").build())
                     .build()
                     .save();
             new ExampleUser.Builder()
                     .userName("greet")
-                    .tableOwner(new TableOwner.Builder().key("greet").build())
+                    .tableOwner(new TableOwner.Builder().ownerKey("greet").build())
                     .build()
                     .save();
         }
