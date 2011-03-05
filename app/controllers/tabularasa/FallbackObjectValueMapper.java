@@ -1,14 +1,18 @@
 package controllers.tabularasa;
 
-import be.objectify.led.Property;
-
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+import be.objectify.led.Property;
+import play.templates.JavaExtensions;
 
 /**
  * objectify-led based implementation of a {@link ObjectValueMapper}.  The inspected object must use
  * {@link be.objectify.led.Property} annotations to get the benefit of automated mapping.
+ * If no annotation is found, an attempt to navigate the object graph using the field names is made.
  *
  * @author Steve Chaloner (steve@objectify.be).
+ * @author Manuel Bernhardt (bernhardt.manuel@gmail.com)
  */
 public class FallbackObjectValueMapper<T> extends AbstractObjectValueMapper<T>
 {
@@ -19,6 +23,11 @@ public class FallbackObjectValueMapper<T> extends AbstractObjectValueMapper<T>
                             String name)
     {
         Object value = getTargetObject(t, name);
+        if(value == null)
+        {
+            // try object graph
+            value = getTargetObjectByPath(t, name);
+        }
         return value == null ? "" : value;
     }
 
@@ -56,5 +65,41 @@ public class FallbackObjectValueMapper<T> extends AbstractObjectValueMapper<T>
         }
 
         return target;
+    }
+
+    private Object getTargetObjectByPath(T t, String name)
+    {
+        String[] path = name.split("\\.");
+        Object obj = t;
+        for (int i = 0; i < path.length; i++)
+        {
+            String s = path[i];
+            try{
+                Field f = obj.getClass().getField(s);
+                if(i == (path.length-1)) {
+                    try
+                    {
+                        Method getter = obj.getClass().getMethod("get" + JavaExtensions.capFirst(f.getName()));
+                        return getter.invoke(obj, new Object[0]);
+                    }
+                    catch(NoSuchMethodException e)
+                    {
+                        return f.get(obj).toString();
+                    }
+                }
+                else
+                {
+                    obj = f.get(obj);
+                }
+            }
+            catch(Exception e)
+            {
+                // maybe we should throw a qualified exception of some sort here
+                throw new RuntimeException(String.format("Field '%s' of class '%s' in path '%s' does not exist", s, obj.getClass().getName(), name));
+            }
+
+        }
+
+        return null;
     }
 }
