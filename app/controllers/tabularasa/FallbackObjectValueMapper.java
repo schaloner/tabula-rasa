@@ -1,6 +1,7 @@
 package controllers.tabularasa;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
 import be.objectify.led.Property;
@@ -73,33 +74,61 @@ public class FallbackObjectValueMapper<T> extends AbstractObjectValueMapper<T>
         Object obj = t;
         for (int i = 0; i < path.length; i++)
         {
-            String s = path[i];
-            try{
-                Field f = obj.getClass().getField(s);
-                if(i == (path.length-1)) {
+            if(obj != null)
+            {
+                String s = path[i];
+                try
+                {
+                    boolean isMethod = false;
+                    Member m;
                     try
                     {
-                        Method getter = obj.getClass().getMethod("get" + JavaExtensions.capFirst(f.getName()));
-                        return getter.invoke(obj, new Object[0]);
+                        m = obj.getClass().getField(s);
                     }
-                    catch(NoSuchMethodException e)
+                    catch(NoSuchFieldException nsfe)
                     {
-                        return f.get(obj).toString();
+                        // try a getter method
+                        m = obj.getClass().getMethod("get" + JavaExtensions.capFirst(s));
+                        isMethod = true;
+                    }
+                    if(i == (path.length-1))
+                    {
+                        try
+                        {
+                            Method getter;
+                            if(!isMethod)
+                            {
+                                getter = obj.getClass().getMethod("get" + JavaExtensions.capFirst(m.getName()));
+                            } else
+                            {
+                                getter = (Method) m;
+                            }
+                            return getter.invoke(obj, new Object[0]);
+                        }
+                        catch(NoSuchMethodException e)
+                        {
+                            // try direct field access
+                            return ((Field)m).get(obj).toString();
+                        }
+                    }
+                    else
+                    {
+                        if(isMethod)
+                        {
+                            obj = ((Method)m).invoke(obj, new Object[0]);
+                        } else
+                        {
+                            obj = ((Field)m).get(obj);
+                        }
                     }
                 }
-                else
+                catch(Exception e)
                 {
-                    obj = f.get(obj);
+                    // maybe we should throw a qualified exception of some sort here
+                    throw new RuntimeException(String.format("Member '%s' of class '%s' in path '%s' does not exist", s, obj.getClass().getName(), name));
                 }
             }
-            catch(Exception e)
-            {
-                // maybe we should throw a qualified exception of some sort here
-                throw new RuntimeException(String.format("Field '%s' of class '%s' in path '%s' does not exist", s, obj.getClass().getName(), name));
-            }
-
         }
-
         return null;
     }
 }
