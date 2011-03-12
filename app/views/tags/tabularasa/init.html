@@ -10,6 +10,10 @@
         _internal${_tableId}Params.fnServerData = function ( sSource, aoData, fnCallback ) {
             aoData.push( { "name": "tableId",
                            "value": "${_tableId}" } );
+        if (typeof addRequestParameters != 'undefined')
+        {
+            addRequestParameters(aoData, "${_tableId}");
+        }
         $.getJSON( sSource, aoData, function (json) {
 	        fnCallback(json)
         });

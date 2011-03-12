@@ -17,6 +17,7 @@ package controllers;
 
 import controllers.tabularasa.TableController;
 import models.AjaxSamplePerson;
+import models.Foo;
 import play.mvc.Controller;
 
 import java.util.List;
@@ -34,8 +35,14 @@ public class AjaxSampleApplication extends Controller {
                             Integer iDisplayStart,
                             Integer iDisplayLength,
                             String sColumns,
-                            String sEcho)
+                            String sEcho,
+                            String manuallyInsertedParameter,
+                            Foo foo)
     {
+        // the manually inserted parameter can be used for whatever you want.
+        // standard play bindings can be used too, so the manual insertion of foo.x, foo.y and foo.z to
+        // the request will be bound to the foo method parameter's fields
+
         List<AjaxSamplePerson> people = AjaxSamplePerson.all().from(iDisplayStart == null ? 0 : iDisplayStart).fetch(iDisplayLength == null ? 10 : iDisplayLength);
         long totalRecords = AjaxSamplePerson.count();
         TableController.renderJSON(people,

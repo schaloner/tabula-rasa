@@ -20,6 +20,18 @@
              };
         #{/tabularasa.init}
     });
+
+    function addRequestParameters(parameters, tableId) {
+        parameters.push( { "name": "manuallyInsertedParameter",
+                           "value": "bar" } );
+        parameters.push( { "name": "foo.x",
+                           "value": "steve" } );
+        parameters.push( { "name": "foo.y",
+                           "value": true } );
+        parameters.push( { "name": "foo.z",
+                           "value": 5 } );
+    }
+
 </script>
 #{/set}
 

@@ -119,6 +119,24 @@ bc. #{tabularasa.table tableModel:tableModel, cssClass:'display'}
 
 FooController.getByColumnKey is a static utility method that retrieves a value from the target object based on the column key.  See the section below on mapping values for more on this.
 
+h3. Adding more data to the AJAX request
+
+If you want to add parameters to the AJAX request, the easiest way to do this is to add a method called addRequestParameters to your page script.  This method
+takes two parameters - a map containing the request parameters, and the table ID.  To add the parameters, just push them into the parameters object.
+
+bc. function addRequestParameters(parameters, tableId) {
+    parameters.push( { "name": "manuallyInsertedParameter",
+                       "value": "bar" } );
+    parameters.push( { "name": "foo.x",
+                       "value": "steve" } );
+    parameters.push( { "name": "foo.y",
+                       "value": true } );
+    parameters.push( { "name": "foo.z",
+                       "value": 5 } );
+}
+
+The usual Play binding magic works, so if your controller method takes a Foo parameter then foo.x, foo.y and foo.z will be bound to the matched fields.
+
 h2. Mapping values based on the column key
 
 h3. The brute force approach

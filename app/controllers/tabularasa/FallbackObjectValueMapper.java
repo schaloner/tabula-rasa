@@ -23,7 +23,7 @@ public class FallbackObjectValueMapper<T> extends AbstractObjectValueMapper<T>
                             String name)
     {
         Object value = getTargetObject(t, name);
-        if(value == null)
+        if (value == null)
         {
             // try object graph
             value = getTargetObjectByPath(t, name);
@@ -34,7 +34,7 @@ public class FallbackObjectValueMapper<T> extends AbstractObjectValueMapper<T>
     /**
      * Gets the value of the field marked as property <i>name</i>, or null if it can't be found.
      *
-     * @param t the object containing the information
+     * @param t    the object containing the information
      * @param name the identifier for that information
      * @return the value of the property
      */
@@ -67,22 +67,25 @@ public class FallbackObjectValueMapper<T> extends AbstractObjectValueMapper<T>
         return target;
     }
 
-    private Object getTargetObjectByPath(T t, String name)
+    private Object getTargetObjectByPath(T t,
+                                         String name)
     {
         String[] path = name.split("\\.");
         Object obj = t;
         for (int i = 0; i < path.length; i++)
         {
             String s = path[i];
-            try{
+            try
+            {
                 Field f = obj.getClass().getField(s);
-                if(i == (path.length-1)) {
+                if (i == (path.length - 1))
+                {
                     try
                     {
                         Method getter = obj.getClass().getMethod("get" + JavaExtensions.capFirst(f.getName()));
                         return getter.invoke(obj, new Object[0]);
                     }
-                    catch(NoSuchMethodException e)
+                    catch (NoSuchMethodException e)
                     {
                         return f.get(obj).toString();
                     }
@@ -92,10 +95,13 @@ public class FallbackObjectValueMapper<T> extends AbstractObjectValueMapper<T>
                     obj = f.get(obj);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 // maybe we should throw a qualified exception of some sort here
-                throw new RuntimeException(String.format("Field '%s' of class '%s' in path '%s' does not exist", s, obj.getClass().getName(), name));
+                throw new RuntimeException(String.format("Field [%s] of class [%s] in path [%s] does not exist",
+                                                         s,
+                                                         obj.getClass().getName(),
+                                                         name));
             }
 
         }

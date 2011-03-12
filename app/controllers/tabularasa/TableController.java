@@ -22,6 +22,7 @@ import models.tabularasa.TableModel;
 import models.tabularasa.TableOwner;
 import play.mvc.Controller;
 import play.mvc.Util;
+import utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,8 +79,15 @@ public class TableController extends Controller
                 List<String> row = new ArrayList<String>();
                 for (String propertyName : propertyNames)
                 {
-                    row.add(objectValueMapper.getAsString(item,
-                                                          propertyName));
+                    if (!StringUtils.isEmpty(propertyName))
+                    {
+                        row.add(objectValueMapper.getAsString(item,
+                                                              propertyName));
+                    }
+                    else
+                    {
+                        row.add(null);
+                    }
                 }
                 content.addData(row);
             }
